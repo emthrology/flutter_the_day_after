@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,8 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _BottomPart(),
               ],
             ),
-        ),
-    ));
+          ),
+        ));
   }
 }
 
@@ -63,8 +64,16 @@ class _TopPart extends StatelessWidget {
             ],
           ),
           IconButton(
-            onPressed: () {},
             iconSize: 60.0,
+            onPressed: () {
+              showCupertinoDialog(
+                context: context,
+                barrierDismissible: true, //backdropClick 시 닫히는 기능
+                builder: (BuildContext context) {
+                  return _DateSelector();
+                },
+              );
+            },
             icon: Icon(
               Icons.favorite,
               color: Colors.red,
@@ -96,3 +105,26 @@ class _BottomPart extends StatelessWidget {
     );
   }
 }
+
+class _DateSelector extends StatelessWidget {
+  const _DateSelector({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    //정렬 기준점을 만드는 widget: Align
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        color: Colors.white,
+        height: 300.0,
+        child: CupertinoDatePicker(
+          onDateTimeChanged: (DateTime date) {
+            print(date);
+          },
+          mode: CupertinoDatePickerMode.date
+        ),
+      ),
+    );
+  }
+}
+
