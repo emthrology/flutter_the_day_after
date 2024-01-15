@@ -28,11 +28,23 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _TopPart extends StatelessWidget {
+class _TopPart extends StatefulWidget {
   const _TopPart({super.key});
 
   @override
+  State<_TopPart> createState() => _TopPartState();
+}
+
+class _TopPartState extends State<_TopPart> {
+  DateTime selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
+
+  @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -55,7 +67,7 @@ class _TopPart extends StatelessWidget {
                     fontSize: 30.0),
               ),
               Text(
-                '2022.12.27',
+                '${selectedDate.year}.${selectedDate.month}.${selectedDate.day}',
                 style: TextStyle(
                     color: Colors.white,
                     fontFamily: 'sunflower',
@@ -70,7 +82,27 @@ class _TopPart extends StatelessWidget {
                 context: context,
                 barrierDismissible: true, //backdropClick 시 닫히는 기능
                 builder: (BuildContext context) {
-                  return _DateSelector();
+                  return Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      color: Colors.white,
+                      height: 300.0,
+                      child: CupertinoDatePicker(
+                          onDateTimeChanged: (DateTime date) {
+                            setState(() {
+                              selectedDate = date;
+                            });
+                          },
+                          initialDateTime: selectedDate,
+                          maximumDate: DateTime(
+                            now.year,
+                            now.month,
+                            now.day
+                          ),
+                          mode: CupertinoDatePickerMode.date
+                      ),
+                    ),
+                  );
                 },
               );
             },
@@ -80,7 +112,13 @@ class _TopPart extends StatelessWidget {
             ),
           ),
           Text(
-            'D+1',
+            'D+${
+              DateTime(
+                now.year,
+                now.month,
+                now.day
+              ).difference(selectedDate).inDays
+            }',
             style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'sunflower',
@@ -106,25 +144,4 @@ class _BottomPart extends StatelessWidget {
   }
 }
 
-class _DateSelector extends StatelessWidget {
-  const _DateSelector({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    //정렬 기준점을 만드는 widget: Align
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        color: Colors.white,
-        height: 300.0,
-        child: CupertinoDatePicker(
-          onDateTimeChanged: (DateTime date) {
-            print(date);
-          },
-          mode: CupertinoDatePickerMode.date
-        ),
-      ),
-    );
-  }
-}
 
