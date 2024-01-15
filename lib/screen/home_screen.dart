@@ -9,6 +9,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  DateTime selectedDate = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,30 +23,52 @@ class _HomeScreenState extends State<HomeScreen> {
           bottom: false,
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
-            child: const Column(
+            child: Column(
               children: [
-                _TopPart(),
+                _TopPart(
+                  selectedDate: selectedDate,
+                  onPressed: onHeartPressed,
+                ),
                 _BottomPart(),
               ],
             ),
           ),
         ));
   }
+
+  void onHeartPressed () {
+    final DateTime now = DateTime.now();
+    showCupertinoDialog(
+      context: context,
+      barrierDismissible: true, //backdropClick 시 닫히는 기능
+      builder: (BuildContext context) {
+        return Align(
+          alignment: Alignment.bottomCenter,
+          child: Container(
+            color: Colors.white,
+            height: 300.0,
+            child: CupertinoDatePicker(
+                onDateTimeChanged: (DateTime date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+                initialDateTime: selectedDate,
+                maximumDate: DateTime(now.year, now.month, now.day),
+                mode: CupertinoDatePickerMode.date),
+          ),
+        );
+      },
+    );
+  }
 }
 
-class _TopPart extends StatefulWidget {
-  const _TopPart({super.key});
+class _TopPart extends StatelessWidget {
+  final DateTime selectedDate;
+  final VoidCallback onPressed;
 
-  @override
-  State<_TopPart> createState() => _TopPartState();
-}
-
-class _TopPartState extends State<_TopPart> {
-  DateTime selectedDate = DateTime(
-    DateTime.now().year,
-    DateTime.now().month,
-    DateTime.now().day,
-  );
+  //constructor 설정하기
+  _TopPart({required this.selectedDate, required this.onPressed, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -77,48 +105,14 @@ class _TopPartState extends State<_TopPart> {
           ),
           IconButton(
             iconSize: 60.0,
-            onPressed: () {
-              showCupertinoDialog(
-                context: context,
-                barrierDismissible: true, //backdropClick 시 닫히는 기능
-                builder: (BuildContext context) {
-                  return Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Container(
-                      color: Colors.white,
-                      height: 300.0,
-                      child: CupertinoDatePicker(
-                          onDateTimeChanged: (DateTime date) {
-                            setState(() {
-                              selectedDate = date;
-                            });
-                          },
-                          initialDateTime: selectedDate,
-                          maximumDate: DateTime(
-                            now.year,
-                            now.month,
-                            now.day
-                          ),
-                          mode: CupertinoDatePickerMode.date
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
+            onPressed: onPressed,
             icon: Icon(
               Icons.favorite,
               color: Colors.red,
             ),
           ),
           Text(
-            'D+${
-              DateTime(
-                now.year,
-                now.month,
-                now.day
-              ).difference(selectedDate).inDays
-            }',
+            'D+${DateTime(now.year, now.month, now.day).difference(selectedDate).inDays}',
             style: TextStyle(
                 color: Colors.white,
                 fontFamily: 'sunflower',
@@ -143,5 +137,3 @@ class _BottomPart extends StatelessWidget {
     );
   }
 }
-
-
